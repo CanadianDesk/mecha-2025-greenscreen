@@ -1,149 +1,90 @@
-import React from 'react';
+'use client';
 
-const Home = () => {
+import { useEffect, useRef, useState } from 'react';
+
+export default function Home() {
+  const tripleVideoRef = useRef<HTMLVideoElement>(null);
+  const [currentState, setCurrentState] = useState(0);
+  const [teamName, setTeamName] = useState('RED-1');
+
+  const states = ['IDLE READY', 'PLAYING', 'IDLE ENDED'];
+
+  const videoFileName = (teamName: string) => {
+    return `/${teamName.toLowerCase()}.mp4`;
+  };
+
+  useEffect(() => {
+    const eventSource = new EventSource('/api/events');
+
+    eventSource.onmessage = (event) => {
+      const currentVideo = tripleVideoRef.current;
+      if (!currentVideo) return;
+
+      switch (event.data) {
+        case 'play-red-1':
+        case 'play-red-2':
+        case 'play-blue-1':
+        case 'play-blue-2': {
+          const newTeam = event.data.replace('play-', '').toUpperCase();
+
+          if (teamName !== newTeam) {
+            setTeamName(newTeam);
+            currentVideo.currentTime = 0;
+            currentVideo.loop = false;
+            setCurrentState(0);
+          } else if (currentState === 0) {
+            setCurrentState(1);
+            currentVideo.play();
+          }
+          break;
+        }
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [teamName, currentState]);
+
+  // Handle video source updates
+  useEffect(() => {
+    const video = tripleVideoRef.current;
+    if (video) {
+      video.load(); // Reload video when source changes
+      setCurrentState(0);
+    }
+  }, [teamName]);
+
   return (
     <main>
+      <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
+        {/* DEBUG  */}
+        <div className='absolute top-4 left-4 z-10 overflow-hidden'>
+          <h1 className='text-white font-bold text-4xl upper'>debug info:</h1>
+          <p className='text-white font-bold text-3xl'>team: {teamName}<br></br> mode: {states[currentState]}</p>
+        </div>
 
-      {/* FIRST SCENE: 5X1 + BOT */}
-      <div className="relative w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
-        <div className='absolute top-0 left-0 w-[1920px] h-[400px] bg-green-400 overflow-hidden z-10'>
-        </div>
-        {/* 5 X 1 INDIVUDAL VIDEOS */}
-        <div className="w-[300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden">
-          <div className="w-[600px] overflow-hidden">
-            <video
-              className="w-[450px] h-[1000px] object-cover scale-[1] translate-x-[-20px]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/single.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        <div className="w-[300px] h-[1000px] absolute bottom-0 right-[300px] bg-green-500 overflow-hidden">
-          <div className="w-[600px] overflow-hidden">
-            <video
-              className="w-[450px] h-[1000px] object-cover scale-[1] translate-x-[-20px]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/single.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        <div className="w-[300px] h-[1000px] absolute bottom-0 right-[600px] bg-green-500 overflow-hidden">
-          <div className="w-[600px] overflow-hidden">
-            <video
-              className="w-[450px] h-[1000px] object-cover scale-[1] translate-x-[-20px]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/single.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        <div className="w-[300px] h-[1000px] absolute bottom-0 right-[900px] bg-green-500 overflow-hidden">
-          <div className="w-[600px] overflow-hidden">
-            <video
-              className="w-[450px] h-[1000px] object-cover scale-[1] translate-x-[-20px]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/single.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        <div className="w-[300px] h-[1000px] absolute bottom-0 right-[1200px] bg-green-500 overflow-hidden">
-          <div className="w-[600px] overflow-hidden">
-            <video
-              className="w-[450px] h-[1000px] object-cover scale-[1] translate-x-[-20px]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/single.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        {/* BOT VIDEO */}
-        <div className='absolute top-[400px] left-0 z-20 w-[420px] overflow-hidden'>
-          <video 
-            className='w-[450px] h-[300px] object-cover'
-            autoPlay
-            loop
-            playsInline
-            muted
-          >
-            <source src="/3388N.mp4" type="video/mp4" />
-          </video>
-        </div>
-      </div>
-      
-
-      {/* SECOND SCENE: 1X3 + BOT */}
-      <div className="relative w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
-
-        {/* 1 X 3 INDIVUDAL VIDEO */}
+        {/* 1 X 3 INDIVIDUAL VIDEO */}
         <div className="w-[1300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden">
           <div className="w-[1300px] overflow-hidden">
             <video
+              ref={tripleVideoRef}
               className="w-[1300px] h-[1000px] object-cover scale-[1]"
-              autoPlay
-              loop
-              muted
               playsInline
+              muted
+              onEnded={() => {
+                setCurrentState(2);
+              }}
             >
-              <source src="/triple.mp4" type="video/mp4" />
+              <source src={videoFileName(teamName)} type="video/mp4" />
             </video>
           </div>
         </div>
 
         {/* BOT VIDEO */}
-        <div className='absolute top-[400px] left-[0] z-20 w-[640px] overflow-hidden'>
-          <video 
-            className='w-[640px] h-[600px] object-cover'
-            autoPlay
-            loop
-            playsInline
-            muted
-          >
-            <source src="/3388N.mp4" type="video/mp4" />
-          </video>
-        </div>
-      </div>
-
-
-      {/* THIRD SCENE: 1X6 + BOT */}
-      <div className="relative w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
-
-        {/* 1 X 6 INDIVUDAL VIDEO */}
-        <div className="w-[1300px] absolute bottom-0 right-0 bg-green-500 overflow-hidden">
-          <div className="w-[1300px] overflow-hidden">
-            <video
-              className="w-[1300px] object-cover scale-[1]"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src="/six.mp4" type="video/mp4" />
-            </video>
-          </div>
-        </div>
-        
-        {/* BOT VIDEO */}
-        <div className='absolute top-[400px] left-[0] z-20 w-[640px] overflow-hidden'>
-          <video 
-            className='w-[640px] h-[600px] object-cover'
+        <div className="absolute top-[400px] left-[0] z-20 w-[640px] overflow-hidden">
+          <video
+            className="w-[640px] h-[600px] object-cover"
             autoPlay
             loop
             playsInline
@@ -155,6 +96,4 @@ const Home = () => {
       </div>
     </main>
   );
-};
-
-export default Home;
+}
