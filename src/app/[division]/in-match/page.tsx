@@ -7,7 +7,7 @@ import React from 'react';
 
 export default function InMatch() {
   const [currentTeamNames, setCurrentTeamNames] = useState(['210Y', '210Z', '210X', '210W']);
-  const [currentTeamCountries, setCurrentTeamCountries] = useState(['CA', 'US', 'US', 'CA']);
+  const [currentTeamCountries, setCurrentTeamCountries] = useState(['ca', 'us', 'us', 'ca']);
   const [currentTeamRanks, setCurrentTeamRanks] = useState([2, 89, 20, 1]);
   const [autoBonus, setAutoBonus] = useState([false, true]);
   const [currentScore, setCurrentScore] = useState([100, 23]);
