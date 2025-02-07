@@ -2,11 +2,15 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { teamToContryMap } from '@/lib/constants';
 
 export default function Home() {
   const tripleVideoRef = useRef<HTMLVideoElement>(null);
   const [currentState, setCurrentState] = useState(0);
-  const [teamName, setTeamName] = useState('RED-1');
+  const [teamColor, setTeamColor] = useState('RED-1');
+  const [team, setTeam] = useState('210Y');
+  const [teamName, setTeamName] = useState('it worked yesterday');
 
   const states = ['IDLE READY', 'PLAYING', 'IDLE ENDED'];
 
@@ -22,16 +26,19 @@ export default function Home() {
     eventSource.onmessage = (event) => {
       const currentVideo = tripleVideoRef.current;
       if (!currentVideo) return;
+      const command = event.data as string;
 
-      switch (event.data) {
-        case 'play-red-1':
-        case 'play-red-2':
-        case 'play-blue-1':
-        case 'play-blue-2': {
-          const newTeam = event.data.replace('play-', '').toUpperCase();
+      if (!command.startsWith(division)) return;
 
-          if (teamName !== newTeam) {
-            setTeamName(newTeam);
+      switch (command) {
+        case `${division}-red-1`:
+        case `${division}-red-2`:
+        case `${division}-blue-1`:
+        case `${division}-blue-2`: {
+          const newTeam = command.replace(`${division}-`, '').toUpperCase();
+
+          if (teamColor !== newTeam) {
+            setTeamColor(newTeam);
             currentVideo.currentTime = 0;
             currentVideo.loop = false;
             setCurrentState(0);
@@ -47,7 +54,7 @@ export default function Home() {
     return () => {
       eventSource.close();
     };
-  }, [teamName, currentState]);
+  }, [teamColor, currentState]);
 
   useEffect(() => {
     const video = tripleVideoRef.current;
@@ -55,7 +62,7 @@ export default function Home() {
       video.load();
       setCurrentState(0);
     }
-  }, [teamName]);
+  }, [teamColor]);
 
   return (
     <main>
@@ -65,7 +72,7 @@ export default function Home() {
           <h1 className='font-bold uppercase'>debug info:</h1>
           <p className='font-bold'>page: WALKOUT</p>
           <p className='font-bold'>division: {division.toUpperCase()}</p>
-          <p className='font-bold'>team: {teamName}</p>
+          <p className='font-bold'>team: {teamColor}</p>
           <p className='font-bold'>mode: {states[currentState]}</p>
         </div>
 
@@ -81,13 +88,13 @@ export default function Home() {
                 setCurrentState(2);
               }}
             >
-              <source src={videoFileName(teamName)} type="video/mp4" />
+              <source src={videoFileName(teamColor)} type="video/mp4" />
             </video>
           </div>
         </div>
 
         {/* BOT VIDEO */}
-        <div className={`absolute top-[400px] left-[0] z-20 w-[640px] overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`absolute top-[150px] left-[0] z-20 w-[640px] overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
           <video
             className="w-[640px] h-[600px] object-cover"
             autoPlay
@@ -98,6 +105,42 @@ export default function Home() {
             <source src="/3388N.mp4" type="video/mp4" />
           </video>
         </div>
+
+        {/* BANNER */}
+        <AnimatePresence>
+          {currentState === 2 && (
+            <motion.div
+              initial={{ x: -620 }}
+              animate={{ x: 0 }}
+              exit={{ x: -620, transition: { duration: 0 } }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }}
+              className={`
+                absolute left-0 bottom-[160px] z-50 h-[200px] w-[620px] rounded-none
+                ${teamColor.startsWith('RED') ? 'bg-[#e81d2d]' : 'bg-[#0476be]'}
+              `}
+            >
+              <div className='ml-24 flex flex-row'>
+                <div className='text-white font-saira text-[96px] uppercase'>
+                  {team}
+                </div>
+                <div className='my-auto ml-8'>
+                  <img
+                    className='w-[100px] z-50 border-2 border-white rounded-md'
+                    src={`/flag/${teamToContryMap.get(team) || 'ca'}.svg`}
+                    alt="Canada"
+                  />
+                </div>
+              </div>
+              <div className='text-white text-[42px] overflow-hidden -mt-4 tracking-wider ml-24 uppercase'>
+                {teamName}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </main>
   );

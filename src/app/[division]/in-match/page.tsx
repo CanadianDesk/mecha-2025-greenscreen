@@ -6,16 +6,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import React from 'react';
 
 export default function InMatch() {
-  const [currentTeamNames, setCurrentTeamNames] = useState(['210Y', '210Z', '210X', '210W']);
+  // [B1, B2, R1, R2]
+  // BADLANDS -> [B1, XX, R1, XX]
+  const [currentTeamNames, setCurrentTeamNames] = useState(['210Y', '210Z', '210X', '223930H']);
   const [currentTeamCountries, setCurrentTeamCountries] = useState(['ca', 'us', 'us', 'ca']);
-  const [currentTeamRanks, setCurrentTeamRanks] = useState([2, 89, 20, 1]);
+  const [currentTeamRanks, setCurrentTeamRanks] = useState([20, 1, 2, 89]);
+  const [autonomousWinPoint, setAutonomousWinPoint] = useState([true, false]);
   const [autoBonus, setAutoBonus] = useState([false, true]);
-  const [currentScore, setCurrentScore] = useState([100, 23]);
+  const [currentScore, setCurrentScore] = useState([23, 100]);
   const [currentMatchState, setCurrentMatchState] = useState('DRIVER');
   const [currentTimerValue, setCurrentTimerValue] = useState(120);
   const [currentMatchName, setCurrentMatchName] = useState('Q10');
 
   const division = useParams().division as string;
+
+  const validDivisions = ['rockies', 'prairies', 'foothills', 'badlands', 'dome']
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +61,7 @@ export default function InMatch() {
 
   return (
     <main>
-      <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
+      <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-500 overflow-hidden mb-12">
         {/* DEBUG  */}
         <div className="absolute top-24 left-1/2 -translate-x-1/2 border-4 border-yellow-300 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans">
           <h1 className="font-bold uppercase text-center">debug info:</h1>
@@ -90,11 +95,11 @@ export default function InMatch() {
             {currentMatchName}
           </p>
         </div>
-
+        {/* RED SCORE */}
         <div className={`absolute bottom-0 left-[1080px] z-20 opacity-100`}>
           <motion.div className="flex text-white text-[124px] uppercase text-left">
             <AnimatePresence mode="popLayout">
-              {String(currentScore[0]).split('').map((digit, index) => (
+              {String(currentScore[1]).split('').map((digit, index) => (
                 <motion.span
                   key={`red-${index}-${digit}`}
                   initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -110,11 +115,18 @@ export default function InMatch() {
           </motion.div>
         </div>
 
-        {/* BLUE SCORE - Modified for per-digit animation */}
+        {/* DIVISION ICON */}
+        <img
+          className='absolute bottom-[45px] left-[430px] w-[175px] z-20 opacity-100'
+          src={`/png/${division}.png`}
+          onError={(e) => { e.currentTarget.style.display = 'none' }}
+        />
+
+        {/* BLUE SCORE */}
         <div className={`absolute bottom-0 right-[870px] z-20 opacity-100`}>
           <motion.div className="flex text-white text-[124px] uppercase text-right">
             <AnimatePresence mode="popLayout">
-              {String(currentScore[1]).split('').map((digit, index) => (
+              {String(currentScore[0]).split('').map((digit, index) => (
                 <motion.span
                   key={`blue-${index}-${digit}`}
                   initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -132,92 +144,143 @@ export default function InMatch() {
 
 
         {/* RED 1 RANK */}
-        <div className="absolute bottom-[103px] right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-black text-[36px] font-extrabold uppercase text-center">
-            {currentTeamRanks[0]}
-          </p>
-        </div>
-        {/* RED 1 TEAM NAME */}
-        <div className="absolute bottom-[87px] right-[460px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
-            {currentTeamNames[0]}
-          </p>
-        </div>
-        {/* RED 1 FLAG */}
-        <div className="absolute bottom-[110px] right-[345px] z-20 opacity-100">
-          <img
-            className="w-[55px] border-2 border-white"
-            src={`/flag/${currentTeamCountries[0]}.svg`}
-          />
-        </div>
-
-        {/* RED 2 RANK */}
-        <div className="absolute bottom-[48px] right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-black text-[36px] font-extrabold uppercase text-center">
-            {currentTeamRanks[1]}
-          </p>
-        </div>
-        {/* RED 2 TEAM NAME */}
-        <div className="absolute bottom-[31px] right-[460px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
-            {currentTeamNames[1]}
-          </p>
-        </div>
-        {/* RED 2 FLAG */}
-        <div className="absolute bottom-[55px] right-[345px] z-20 opacity-100">
-          <img
-            className="w-[55px] border-2 border-white"
-            src={`/flag/${currentTeamCountries[1]}.svg`}
-          />
-        </div>
-
-        {/* BLUE 1 RANK */}
-        <div className="absolute bottom-[103px] left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+        <div className={`absolute right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[78px]' : 'bottom-[103px]'}`}>
           <p className="text-black text-[36px] font-extrabold uppercase text-center">
             {currentTeamRanks[2]}
           </p>
         </div>
-        {/* BLUE 1 TEAM NAME */}
-        <div className="absolute bottom-[87px] left-[680px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
+        {/* RED 1 TEAM NAME */}
+        <div className={`absolute right-[460px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[61px]' : 'bottom-[87px]'}`}>
+          <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
             {currentTeamNames[2]}
           </p>
         </div>
-        {/* BLUE 1 FLAG */}
-        <div className="absolute bottom-[110px] left-[565px] z-20 opacity-100">
+        {/* RED 1 FLAG */}
+        <div className={`absolute right-[345px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
           <img
             className="w-[55px] border-2 border-white"
             src={`/flag/${currentTeamCountries[2]}.svg`}
           />
         </div>
 
-        {/* BLUE 2 RANK */}
-        <div className="absolute bottom-[48px] left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+        {division !== 'badlands' && (
+          <>
+            {/* RED 2 RANK */}
+            <div className="absolute bottom-[48px] right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-black text-[36px] font-extrabold uppercase text-center">
+                {currentTeamRanks[3]}
+              </p>
+            </div>
+            {/* RED 2 TEAM NAME */}
+            <div className="absolute bottom-[31px] right-[460px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
+                {currentTeamNames[3]}
+              </p>
+            </div>
+            {/* RED 2 FLAG */}
+            <div className="absolute bottom-[55px] right-[345px] z-20 opacity-100">
+              <img
+                className="w-[55px] border-2 border-white"
+                src={`/flag/${currentTeamCountries[3]}.svg`}
+              />
+            </div>
+          </>
+        )}
+
+
+        {/* BLUE 1 RANK */}
+        <div className={`absolute left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[78px]' : 'bottom-[103px]'}`}>
           <p className="text-black text-[36px] font-extrabold uppercase text-center">
-            {currentTeamRanks[3]}
+            {currentTeamRanks[0]}
           </p>
         </div>
-        {/* BLUE 2 TEAM NAME */}
-        <div className="absolute bottom-[31px] left-[680px] z-20 opacity-100 flex items-center justify-center">
-          <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
-            {currentTeamNames[3]}
+        {/* BLUE 1 TEAM NAME */}
+        <div className={`absolute left-[680px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[61px]' : 'bottom-[87px]'}`}>
+          <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
+            {currentTeamNames[0]}
           </p>
         </div>
-        {/* BLUE 2 FLAG */}
-        <div className="absolute bottom-[55px] left-[565px] z-20 opacity-100">
+        {/* BLUE 1 FLAG */}
+        <div className={`absolute bottom-[110px] left-[565px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
           <img
             className="w-[55px] border-2 border-white"
-            src={`/flag/${currentTeamCountries[3]}.svg`}
+            src={`/flag/${currentTeamCountries[0]}.svg`}
           />
         </div>
 
+        {division !== 'badlands' && (
+          <>
+            {/* BLUE 2 RANK */}
+            <div className="absolute bottom-[48px] left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-black text-[36px] font-extrabold uppercase text-center">
+                {currentTeamRanks[1]}
+              </p>
+            </div>
+            {/* BLUE 2 TEAM NAME */}
+            <div className="absolute bottom-[31px] left-[680px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
+                {currentTeamNames[1]}
+              </p>
+            </div>
+            {/* BLUE 2 FLAG */}
+            <div className="absolute bottom-[55px] left-[565px] z-20 opacity-100">
+              <img
+                className="w-[55px] border-2 border-white"
+                src={`/flag/${currentTeamCountries[1]}.svg`}
+              />
+            </div>
+          </>
+        )}
         {/* MATCH STATE + TIMER */}
-        <div className="absolute bottom-[162px] left-[947px] w-[250px] h-[52px] z-20 opacity-100 flex items-center justify-center">
+        <div className="absolute bottom-[162px] left-[947px] w-[250px] h-[52px] z-20 opacity-100 flex items-center justify-center bg-white">
           <p className="text-black text-[48px] font-bold uppercase text-center tracking-wider">
             {currentMatchState}
             {currentTimerValue ? ` ${formatSeconds(currentTimerValue)}` : ''}
           </p>
         </div>
+
+        {/* BLUE AUTO BONUS */}
+        {autoBonus[0] && (
+          <div className="absolute bottom-[162px] left-[561px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#0476be] rounded-none">
+            <p className="text-white text-[36px] uppercase text-center pt-1">
+              AUTO BONUS
+            </p>
+          </div>
+        )}
+
+        {/* RED AUTO BONUS */}
+        {autoBonus[1] && (
+          <div className="absolute bottom-[162px] right-[335px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#e81d2d] rounded-none">
+            <p className="text-white text-[36px] uppercase text-center pt-1">
+              AUTO BONUS
+            </p>
+          </div>
+        )}
+
+        {autonomousWinPoint[0] && (
+          <svg
+            className='absolute w-[45px] left-[836px] bottom-[106px] z-20 opacity-100'
+            viewBox="0 0 24 24"
+            fill="white"
+          >
+            <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
+          </svg>
+        )}
+
+        {autonomousWinPoint[1] && (
+          <svg
+            className='absolute w-[45px] left-[1265px] bottom-[106px] z-20 opacity-100'
+            viewBox="0 0 24 24"
+            fill="white"
+          >
+            <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
+          </svg>
+        )}
+
+        {/* BG BOXES */}
+        {/* <div className='absolute bottom-[39px] left-[561px] w-[512px] h-[123px] z-0 opacity-100 bg-[#0476be] rounded-none'></div>
+        <div className='absolute bottom-[39px] right-[335px] w-[512px] h-[123px] z-0 opacity-100 bg-[#e81d2d] rounded-none'></div> */}
+
       </div>
     </main>
   );

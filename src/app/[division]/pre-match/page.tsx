@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 />
 
 export default function PreMatch() {
-  const [currentTeamNames, setCurrentTeamNames] = useState(['210Y', '210Z', '210X', '210W']);
+  const [currentTeamNames, setCurrentTeamNames] = useState(['ERR', 'ERR', 'ERR', 'ERR']);
   const [currentTeamCountries, setCurrentTeamCountries] = useState(['ca', 'us', 'us', 'ca']);
   const [currentMatchName, setCurrentMatchName] = useState('Q10');
 
@@ -30,19 +30,19 @@ export default function PreMatch() {
 
         <h1 className='text-black font-bold text-center text-[76px] -mt-2 upper'>{currentMatchName}</h1>
 
-        {/* RED 1 TEAM TEXT */}
+        {/* BLUE 1 TEAM TEXT */}
         <div className={`absolute top-[420px] left-[450px] z-30 opacity-100`}>
           <p className='text-white text-[84px] uppercase'>{currentTeamNames[0]}</p>
         </div>
-        {/* RED 1 FLAG */}
-        <div className={'absolute z-30 top-[125px] left-[450px]'}>
+        {/* BLUE 1 FLAG */}
+        <div className={'absolute z-30 top-[125px] left-[20px] border-2 border-white rounded-md'}>
           <img
-            className=' w-[100px]'
+            className='w-[100px]'
             src={`/flag/${currentTeamCountries[0]}.svg`}
             alt="Canada"
           />
         </div>
-        {/* RED 1 VIDEO */}
+        {/* BLUE 1 VIDEO */}
         <div className={`absolute top-[133px] left-[27px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100`}>
           <video
             className="h-full object-cover"
@@ -55,11 +55,19 @@ export default function PreMatch() {
           </video>
         </div>
 
-        {/* RED 2 TEAM TEXT */}
+        {/* BLUE 2 TEAM TEXT */}
         <div className={`absolute top-[930px] left-[450px] z-30 opacity-100`}>
           <p className='text-white text-[84px] uppercase'>{currentTeamNames[1]}</p>
         </div>
-        {/* RED 2 VIDEO */}
+        {/* BLUE 2 FLAG */}
+        <div className={'absolute z-30 bottom-[425px] left-[20px] border-2 border-white rounded-md'}>
+          <img
+            className='w-[100px]'
+            src={`/flag/${currentTeamCountries[1]}.svg`}
+            alt="Canada"
+          />
+        </div>        
+        {/* BLUE 2 VIDEO */}
         <div className={`absolute bottom-[74px] left-[27px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100`}>
           <video
             className="h-full object-cover"
@@ -72,11 +80,19 @@ export default function PreMatch() {
           </video>
         </div>
 
-        {/* BLUE 1 TEAM TEXT */}
+        {/* RED 1 TEAM TEXT */}
         <div className={`absolute top-[420px] right-[425px] z-30 opacity-100`}>
           <p className='text-white text-[84px] uppercase'>{currentTeamNames[2]}</p>
         </div>
-        {/* BLUE 1 VIDEO */}
+        {/* RED 1 FLAG */}
+        <div className={'absolute z-30 top-[125px] right-[20px] border-2 border-white rounded-md'}>
+          <img
+            className='w-[100px]'
+            src={`/flag/${currentTeamCountries[2]}.svg`}
+            alt="Canada"
+          />
+        </div>
+        {/* RED 1 VIDEO */}
         <div className={`absolute bottom-[74px] right-[24px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100`}>
           <video
             className="h-full object-cover"
@@ -89,11 +105,19 @@ export default function PreMatch() {
           </video>
         </div>
 
-        {/* BLUE 2 TEAM TEXT */}
+        {/* RED 2 TEAM TEXT */}
         <div className={`absolute top-[930px] right-[425px] z-30 opacity-100`}>
           <p className='text-white text-[84px] uppercase'>{currentTeamNames[3]}</p>
         </div>
-        {/* BLUE 2 VIDEO */}
+        {/* RED 2 FLAG */}
+        <div className={'absolute z-30 bottom-[425px] right-[20px] border-2 border-white rounded-md'}>
+          <img
+            className='w-[100px]'
+            src={`/flag/${currentTeamCountries[3]}.svg`}
+            alt="Canada"
+          />
+        </div>
+        {/* RED 2 VIDEO */}
         <div className={`absolute top-[133px] right-[24px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100`}>
           <video
             className="h-full object-cover"

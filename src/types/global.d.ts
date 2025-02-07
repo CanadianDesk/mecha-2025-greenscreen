@@ -1,6 +1,15 @@
 declare global {
-  // eslint-disable-next-line no-var
-  var eventClients: WritableStreamDefaultWriter<string>[] | undefined;
-}
+  type Match = {
+  };
 
-export { };
+
+  type Division = {
+
+  };
+
+  type Team = {
+
+  };
+
+
+}
