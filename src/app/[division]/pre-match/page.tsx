@@ -89,6 +89,7 @@ export default function PreMatch() {
 
   const VideoComponent = ({ teamNumber, className }: { teamNumber: string, className: string }) => {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [videoError, setVideoError] = useState(false);
 
     if (currentDivision === 'badlands') {
       if (teamNumber.includes('%')) {
@@ -104,8 +105,24 @@ export default function PreMatch() {
         video.addEventListener('canplay', () => {
           console.log(`🎥 Video ready to play: ${teamNumber}`);
         });
+        video.addEventListener('error', () => {
+          console.log(`❌ Video failed to load: ${teamNumber}`);
+          setVideoError(true);
+        });
       }
     }, [teamNumber]);
+
+    if (videoError) {
+      return (
+        <div className={className}>
+          <img
+            src="/webp/moo-deng.webp"
+            alt="Fallback Robot Image"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      );
+    }
 
     return (
       <div className={className}>
@@ -117,6 +134,7 @@ export default function PreMatch() {
           loop
           playsInline
           muted
+          onError={() => setVideoError(true)}
         >
           {preloadedVideos[teamNumber] ? (
             <source src={preloadedVideos[teamNumber]} type="video/mp4" />
@@ -146,11 +164,11 @@ export default function PreMatch() {
 
         <h1 className='text-black font-bold text-center text-[76px] -mt-2 upper'>{currentMatchName}</h1>
 
-        {/* BLUE 1 */}
+        {/* RED 1 */}
         <div className={`absolute top-[420px] left-[450px] z-30 opacity-100`}>
-          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[0]}</p>
+          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[2]}</p>
         </div>
-        {currentTeamCountries[0] && (
+        {currentTeamCountries[2] && (
           <div className={'absolute z-30 top-[125px] left-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
@@ -160,15 +178,15 @@ export default function PreMatch() {
           </div>
         )}
         <VideoComponent
-          teamNumber={currentTeamNumbers[0]}
+          teamNumber={currentTeamNumbers[2]}
           className="absolute top-[133px] left-[27px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100"
         />
 
-        {/* BLUE 2 */}
+        {/* RED 2 */}
         <div className={`absolute top-[930px] left-[450px] z-30 opacity-100`}>
-          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[1]}</p>
+          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[3]}</p>
         </div>
-        {currentTeamCountries[1] && (
+        {currentTeamCountries[3] && (
           <div className={'absolute z-30 bottom-[425px] left-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
@@ -178,15 +196,15 @@ export default function PreMatch() {
           </div>
         )}
         <VideoComponent
-          teamNumber={`${currentDivision !== 'badlands' ? currentTeamNumbers[1] : `${currentTeamNumbers[0]}%`}`}
+          teamNumber={`${currentDivision !== 'badlands' ? currentTeamNumbers[3] : `${currentTeamNumbers[2]}%`}`}
           className="absolute bottom-[74px] left-[27px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100"
         />
 
-        {/* RED 1 */}
+        {/* BLUE 1 */}
         <div className={`absolute top-[420px] right-[425px] z-30 opacity-100`}>
-          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[2]}</p>
+          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[0]}</p>
         </div>
-        {currentTeamCountries[2] && (
+        {currentTeamCountries[0] && (
           <div className={'absolute z-30 top-[125px] right-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
@@ -196,25 +214,25 @@ export default function PreMatch() {
           </div>
         )}
         <VideoComponent
-          teamNumber={currentTeamNumbers[2]}
+          teamNumber={currentTeamNumbers[0]}
           className="absolute top-[133px]  right-[24px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100"
         />
 
-        {/* RED 2 */}
+        {/* BLUE 2 */}
         <div className={`absolute top-[930px] right-[425px] z-30 opacity-100`}>
-          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[3]}</p>
+          <p className='text-white text-[84px] uppercase'>{currentTeamNumbers[1]}</p>
         </div>
-        {currentTeamCountries[3] && (
+        {currentTeamCountries[1] && (
           <div className={'absolute z-30 bottom-[425px] right-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
-              src={`/flag/${currentTeamCountries[3]}.svg`}
+              src={`/flag/${currentTeamCountries[1]}.svg`}
               alt="Team Flag"
             />
           </div>
         )}
         <VideoComponent
-          teamNumber={`${currentDivision !== 'badlands' ? currentTeamNumbers[3] : `${currentTeamNumbers[2]}%`}`}
+          teamNumber={`${currentDivision !== 'badlands' ? currentTeamNumbers[1] : `${currentTeamNumbers[0]}%`}`}
           className="absolute bottom-[74px] right-[24px] z-20 w-[430px] h-[390px] overflow-hidden opacity-100"
         />
       </div>

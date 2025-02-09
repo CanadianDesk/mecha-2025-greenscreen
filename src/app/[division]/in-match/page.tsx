@@ -57,8 +57,6 @@ export default function InMatch() {
     }
   }, [scoreData]);
 
-  // todo: on match status data update
-
   useEffect(() => {
     if (matchStatusData?.matchStatusUpdated) {
       const dataDivision = matchStatusData.matchStatusUpdated.linked.name.toLowerCase();
@@ -103,8 +101,6 @@ export default function InMatch() {
   }, [matchStatusData]);
 
 
-
-
   // useEffect(() => {
   //   const handleKeyDown = (e: KeyboardEvent) => {
   //     switch (e.key) {
@@ -130,6 +126,8 @@ export default function InMatch() {
   //   window.addEventListener('keydown', handleKeyDown);
   //   return () => window.removeEventListener('keydown', handleKeyDown);
   // }, []);
+
+
 
   // function to format seconds to mm:ss
   const formatSeconds = (seconds: number) => {
@@ -211,12 +209,12 @@ export default function InMatch() {
             {currentMatchName}
           </p>
         </div>
-        {/* RED SCORE */}
+        {/* BLUE SCORE */}
         {(currentMatchState.toString() === 'AUTON' || (currentMatchState.toString() === 'DRIVER' && getCurrentTimerValueInSeconds() > 0.1)) && (
           <div className={`absolute bottom-0 left-[1080px] z-20 opacity-100`}>
             <motion.div className="flex text-white text-[124px] uppercase text-left">
               <AnimatePresence mode="popLayout">
-                {String(currentScore[1]).split('').map((digit, index) => (
+                {String(currentScore[0]).split('').map((digit, index) => (
                   <motion.span
                     key={`red-${index}-${digit}`}
                     initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -240,12 +238,12 @@ export default function InMatch() {
           onError={(e) => { e.currentTarget.style.display = 'none' }}
         />
 
-        {/* BLUE SCORE */}
+        {/* RED SCORE */}
         {(currentMatchState.toString() === 'AUTON' || (currentMatchState.toString() === 'DRIVER' && getCurrentTimerValueInSeconds() > 0.1)) && (
           <div className={`absolute bottom-0 right-[870px] z-20 opacity-100`}>
             <motion.div className="flex text-white text-[124px] uppercase text-right">
               <AnimatePresence mode="popLayout">
-                {String(currentScore[0]).split('').map((digit, index) => (
+                {String(currentScore[1]).split('').map((digit, index) => (
                   <motion.span
                     key={`blue-${index}-${digit}`}
                     initial={{ scale: 0.8, opacity: 0, y: 20 }}
@@ -269,59 +267,14 @@ export default function InMatch() {
             {currentTeamRanks[2]}
           </p>
         </div>
-        {/* RED 1 TEAM NAME */}
+        {/* BLUE 1 TEAM NAME */}
         <div className={`absolute right-[460px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[61px]' : 'bottom-[87px]'}`}>
           <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
-            {currentTeamNumbers[2]}
-          </p>
-        </div>
-        {/* RED 1 FLAG */}
-        <div className={`absolute right-[345px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
-          <img
-            className="w-[55px] border-2 border-white"
-            src={`/flag/${currentTeamCountries[2]}.svg`}
-          />
-        </div>
-
-        {division !== 'badlands' && (
-          <>
-            {/* RED 2 RANK */}
-            <div className="absolute bottom-[48px] right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
-              <p className="text-black text-[36px] font-extrabold uppercase text-center">
-                {currentTeamRanks[3]}
-              </p>
-            </div>
-            {/* RED 2 TEAM NAME */}
-            <div className="absolute bottom-[31px] right-[460px] z-20 opacity-100 flex items-center justify-center">
-              <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
-                {currentTeamNumbers[3]}
-              </p>
-            </div>
-            {/* RED 2 FLAG */}
-            <div className="absolute bottom-[55px] right-[345px] z-20 opacity-100">
-              <img
-                className="w-[55px] border-2 border-white"
-                src={`/flag/${currentTeamCountries[3]}.svg`}
-              />
-            </div>
-          </>
-        )}
-
-
-        {/* BLUE 1 RANK */}
-        <div className={`absolute left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[78px]' : 'bottom-[103px]'}`}>
-          <p className="text-black text-[36px] font-extrabold uppercase text-center">
-            {currentTeamRanks[0]}
-          </p>
-        </div>
-        {/* BLUE 1 TEAM NAME */}
-        <div className={`absolute left-[680px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[61px]' : 'bottom-[87px]'}`}>
-          <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
             {currentTeamNumbers[0]}
           </p>
         </div>
         {/* BLUE 1 FLAG */}
-        <div className={`absolute bottom-[110px] left-[565px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
+        <div className={`absolute right-[345px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
           <img
             className="w-[55px] border-2 border-white"
             src={`/flag/${currentTeamCountries[0]}.svg`}
@@ -331,19 +284,19 @@ export default function InMatch() {
         {division !== 'badlands' && (
           <>
             {/* BLUE 2 RANK */}
-            <div className="absolute bottom-[48px] left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+            <div className="absolute bottom-[48px] right-[411px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
               <p className="text-black text-[36px] font-extrabold uppercase text-center">
                 {currentTeamRanks[1]}
               </p>
             </div>
             {/* BLUE 2 TEAM NAME */}
-            <div className="absolute bottom-[31px] left-[680px] z-20 opacity-100 flex items-center justify-center">
-              <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
+            <div className="absolute bottom-[31px] right-[460px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
                 {currentTeamNumbers[1]}
               </p>
             </div>
             {/* BLUE 2 FLAG */}
-            <div className="absolute bottom-[55px] left-[565px] z-20 opacity-100">
+            <div className="absolute bottom-[55px] right-[345px] z-20 opacity-100">
               <img
                 className="w-[55px] border-2 border-white"
                 src={`/flag/${currentTeamCountries[1]}.svg`}
@@ -351,35 +304,80 @@ export default function InMatch() {
             </div>
           </>
         )}
+
+
+        {/* RED 1 RANK */}
+        <div className={`absolute left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[78px]' : 'bottom-[103px]'}`}>
+          <p className="text-black text-[36px] font-extrabold uppercase text-center">
+            {currentTeamRanks[2]}
+          </p>
+        </div>
+        {/* RED 1 TEAM NAME */}
+        <div className={`absolute left-[680px] z-20 opacity-100 flex items-center justify-center ${division === 'badlands' ? 'bottom-[61px]' : 'bottom-[87px]'}`}>
+          <p className="text-white text-[48px] font-bold uppercase text-left tracking-wider">
+            {currentTeamNumbers[2]}
+          </p>
+        </div>
+        {/* RED 1 FLAG */}
+        <div className={`absolute bottom-[110px] left-[565px] z-20 opacity-100 ${division === 'badlands' ? 'bottom-[84px]' : 'bottom-[110px]'}`}>
+          <img
+            className="w-[55px] border-2 border-white"
+            src={`/flag/${currentTeamCountries[2]}.svg`}
+          />
+        </div>
+
+        {division !== 'badlands' && (
+          <>
+            {/* RED 2 RANK */}
+            <div className="absolute bottom-[48px] left-[632px] w-[40px] h-[40px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-black text-[36px] font-extrabold uppercase text-center">
+                {currentTeamRanks[3]}
+              </p>
+            </div>
+            {/* RED 2 TEAM NAME */}
+            <div className="absolute bottom-[31px] left-[680px] z-20 opacity-100 flex items-center justify-center">
+              <p className="text-white text-[48px] font-bold uppercase text-right tracking-wider">
+                {currentTeamNumbers[3]}
+              </p>
+            </div>
+            {/* RED 2 FLAG */}
+            <div className="absolute bottom-[55px] left-[565px] z-20 opacity-100">
+              <img
+                className="w-[55px] border-2 border-white"
+                src={`/flag/${currentTeamCountries[3]}.svg`}
+              />
+            </div>
+          </>
+        )}
         {/* MATCH STATE + TIMER */}
         <div className="absolute bottom-[162px] left-[947px] w-[250px] h-[52px] z-20 opacity-100 flex items-center justify-center bg-white">
           <p className="text-black text-[48px] font-bold uppercase text-center tracking-wider">
-            {currentMatchState.toString()}
+            {currentMatchState.toString() !== 'UNKNOWN' ? currentMatchState.toString() : ''}
             {(currentMatchState.toString() === 'AUTON' || currentMatchState.toString() === 'DRIVER') &&
               ` ${currentTimerValue}`
             }
           </p>
         </div>
 
-        {/* BLUE AUTO BONUS */}
-        {autoBonus[0] && (
-          <div className="absolute bottom-[162px] left-[561px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#0476be] rounded-none">
-            <p className="text-white text-[36px] uppercase text-center pt-1">
-              AUTO BONUS
-            </p>
-          </div>
-        )}
-
         {/* RED AUTO BONUS */}
         {autoBonus[1] && (
-          <div className="absolute bottom-[162px] right-[335px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#e81d2d] rounded-none">
+          <div className="absolute bottom-[162px] left-[561px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#e81d2d] rounded-none">
             <p className="text-white text-[36px] uppercase text-center pt-1">
               AUTO BONUS
             </p>
           </div>
         )}
 
-        {autonomousWinPoint[0] && (
+        {/* blue AUTO BONUS */}
+        {autoBonus[0] && (
+          <div className="absolute bottom-[162px] right-[335px] w-[189px] h-[40px] z-20 opacity-100 flex items-center justify-center bg-[#0476be]  rounded-none">
+            <p className="text-white text-[36px] uppercase text-center pt-1">
+              AUTO BONUS
+            </p>
+          </div>
+        )}
+
+        {autonomousWinPoint[1] && (
           <svg
             className='absolute w-[45px] left-[836px] bottom-[106px] z-20 opacity-100'
             viewBox="0 0 24 24"
@@ -389,7 +387,7 @@ export default function InMatch() {
           </svg>
         )}
 
-        {autonomousWinPoint[1] && (
+        {autonomousWinPoint[0] && (
           <svg
             className='absolute w-[45px] left-[1265px] bottom-[106px] z-20 opacity-100'
             viewBox="0 0 24 24"

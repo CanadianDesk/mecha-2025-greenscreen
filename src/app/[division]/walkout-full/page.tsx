@@ -179,6 +179,37 @@ export default function Home() {
   if (loading) return <div className='min-h-screen flex-1 bg-green-500'>Loading (match status)...</div>;
   if (error) return <div className='min-h-screen flex-1 bg-green-500'>Error (match status): {error.message}</div>;
 
+
+  const RobotVideo = ({ teamNumber, className }: { teamNumber: string, className: string }) => {
+    const [videoError, setVideoError] = useState(false);
+
+    if (videoError) {
+      return (
+        <div className={className}>
+          <img
+            src="/webp/moo-deng.webp"
+            alt="Fallback Robot Image"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      );
+    }
+
+    return (
+      <video
+        key={teamNumber}
+        className={className}
+        autoPlay
+        loop
+        playsInline
+        muted
+        onError={() => setVideoError(true)}
+      >
+        <source src={robotFileName(teamNumber)} type="video/mp4" />
+      </video>
+    );
+  };
+
   return (
     <main>
       <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
@@ -215,17 +246,12 @@ export default function Home() {
 
         {/* BOT VIDEO */}
         <div className={`absolute top-[150px] left-[0] z-20 w-[640px] overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
-          <video
-            key={visibleTeam} // Add this key prop
+          <RobotVideo
+            teamNumber={visibleTeam}
             className="w-[640px] h-[600px] object-cover"
-            autoPlay
-            loop
-            playsInline
-            muted
-          >
-            <source src={robotFileName(visibleTeam)} type="video/mp4" />
-          </video>
+          />
         </div>
+        
         {/* BANNER */}
         <AnimatePresence>
           {currentState === 2 && (
