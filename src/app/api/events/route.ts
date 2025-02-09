@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+declare global {
+  var eventClients: WritableStreamDefaultWriter[] | undefined;
+}
+
 export async function GET(request: Request) {
   const stream = new TransformStream();
   const writer = stream.writable.getWriter();

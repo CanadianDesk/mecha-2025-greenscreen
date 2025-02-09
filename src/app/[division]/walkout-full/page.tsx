@@ -1,25 +1,114 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { teamToContryMap } from '@/lib/constants';
+import { countryMap, teamToContryMap } from '@/lib/constants';
+import { useMatchSubscription } from '@/hooks/useMatchSubscription';
 
 export default function Home() {
   const tripleVideoRef = useRef<HTMLVideoElement>(null);
   const [currentState, setCurrentState] = useState(0);
   const [teamColor, setTeamColor] = useState('RED-1');
-  const [team, setTeam] = useState('210Y');
-  const [teamName, setTeamName] = useState('it worked yesterday');
+  const [visibleTeam, setVisibleTeam] = useState('ERR');
+  const [visibleCountry, setVisibleCountry] = useState('ERR');
+  const [currentTeamNumbers, setCurrentTeamNumbers] = useState(['ERR', 'ERR', 'ERR', 'ERR']);
+  const [currentTeamCountries, setCurrentTeamCountries] = useState(['ca', 'us', 'us', 'ca']);
+  const [currentTeamNames, setCurrentTeamNames] = useState(['ERR', 'ERR', 'ERR', 'ERR']);
+  const [visibleTeamName, setVisibleTeamName] = useState('ERR');
 
   const states = ['IDLE READY', 'PLAYING', 'IDLE ENDED'];
 
-  const videoFileName = (teamName: string) => {
-    return `/${teamName.toLowerCase()}.mp4`;
+  const videoFileName = (teamNumber: string) => {
+    return `/team/${teamNumber.toUpperCase()}.MP4`;
   };
 
-  const division = useParams().division as string;
+  const robotFileName = (teamNumber: string) => {
+    return `/robot/${teamNumber.toUpperCase()}.MP4`;
+  };
 
+  const division = useParams().division as "rockies" | "prairies" | "foothills" | "badlands" | "dome";
+
+  const { data: matchQueuedData, loading, error } = useMatchSubscription(division);
+
+
+
+  useEffect(() => {
+    if (matchQueuedData?.matchQueued) {
+      console.log('data: ', matchQueuedData);
+
+
+      let newTeamNumbers = [];
+      if (division !== 'badlands') { // VEX-MS and VEX-HS
+        newTeamNumbers = [
+          matchQueuedData.matchQueued.blue.teams[0].number,
+          matchQueuedData.matchQueued.blue.teams[1].number,
+          matchQueuedData.matchQueued.red.teams[0].number,
+          matchQueuedData.matchQueued.red.teams[1].number
+        ];
+
+
+        console.log('Setting new team numbers:', newTeamNumbers); // Add this
+        setCurrentTeamNumbers(newTeamNumbers);
+      } else {
+
+        newTeamNumbers = [
+          matchQueuedData.matchQueued.blue.teams[0].number,
+          matchQueuedData.matchQueued.blue.teams[0].number,
+          matchQueuedData.matchQueued.red.teams[0].number,
+          matchQueuedData.matchQueued.red.teams[0].number
+        ];
+
+        console.log('Setting new team numbers:', newTeamNumbers); // Add this
+        setCurrentTeamNumbers(newTeamNumbers);
+      }
+      // Preload robot videos
+      newTeamNumbers.forEach(number => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'video';
+        link.href = robotFileName(number);
+        document.head.appendChild(link);
+      });
+
+      // Preload team videos
+      newTeamNumbers.forEach(number => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'video';
+        link.href = videoFileName(number);
+        document.head.appendChild(link);
+      });
+
+      if (division !== 'badlands') { // VEX-MS and VEX-HS
+        //@ts-ignore
+        setCurrentTeamCountries([countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.blue.teams[1].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[1].country)]);
+      } else { // VEX-U
+        //@ts-ignore
+        setCurrentTeamCountries([countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country)]);
+      }
+
+      if (division !== 'badlands') { // VEX-MS and VEX-HS
+        setCurrentTeamNames([
+          matchQueuedData.matchQueued.blue.teams[0].name,
+          matchQueuedData.matchQueued.blue.teams[1].name,
+          matchQueuedData.matchQueued.red.teams[0].name,
+          matchQueuedData.matchQueued.red.teams[1].name
+        ]);
+      } else {
+        setCurrentTeamNames([ // VEX-U
+          matchQueuedData.matchQueued.blue.teams[0].name,
+          matchQueuedData.matchQueued.blue.teams[0].name,
+          matchQueuedData.matchQueued.red.teams[0].name,
+          matchQueuedData.matchQueued.red.teams[0].name
+        ]);
+      }
+    }
+  }, [matchQueuedData]);
+
+  useEffect(() => {
+    console.log('currentTeamNumbers updated:', currentTeamNumbers);
+  }, [currentTeamNumbers]);
   useEffect(() => {
     const eventSource = new EventSource('/api/events');
 
@@ -39,6 +128,29 @@ export default function Home() {
 
           if (teamColor !== newTeam) {
             setTeamColor(newTeam);
+
+            console.log('newTeam: ', newTeam);
+            console.log('current team numbers:', currentTeamNumbers);
+
+            if (newTeam === 'RED-1') {
+              setVisibleTeam(currentTeamNumbers[2]);
+              setVisibleCountry(currentTeamCountries[2]);
+              setVisibleTeamName(currentTeamNames[2]);
+            } else if (newTeam === 'RED-2') {
+              console.log('currentTeamNumbers[3]: ', currentTeamNumbers[3]);
+              setVisibleTeam(currentTeamNumbers[3]);
+              setVisibleCountry(currentTeamCountries[3]);
+              setVisibleTeamName(currentTeamNames[3]);
+            } else if (newTeam === 'BLUE-1') {
+              setVisibleTeam(currentTeamNumbers[0]);
+              setVisibleCountry(currentTeamCountries[0]);
+              setVisibleTeamName(currentTeamNames[0]);
+            } else if (newTeam === 'BLUE-2') {
+              setVisibleTeam(currentTeamNumbers[1]);
+              setVisibleCountry(currentTeamCountries[1]);
+              setVisibleTeamName(currentTeamNames[1]);
+            }
+
             currentVideo.currentTime = 0;
             currentVideo.loop = false;
             setCurrentState(0);
@@ -54,7 +166,7 @@ export default function Home() {
     return () => {
       eventSource.close();
     };
-  }, [teamColor, currentState]);
+  }, [teamColor, currentState, currentTeamNumbers, currentTeamCountries, currentTeamNames, division]);
 
   useEffect(() => {
     const video = tripleVideoRef.current;
@@ -64,17 +176,25 @@ export default function Home() {
     }
   }, [teamColor]);
 
+  if (loading) return <div className='min-h-screen flex-1 bg-green-500'>Loading (match status)...</div>;
+  if (error) return <div className='min-h-screen flex-1 bg-green-500'>Error (match status): {error.message}</div>;
+
   return (
     <main>
       <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
         {/* DEBUG  */}
-        <div className='absolute top-4 left-4 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans'>
+        {/* <div className='absolute top-4 left-4 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans'>
           <h1 className='font-bold uppercase'>debug info:</h1>
           <p className='font-bold'>page: WALKOUT</p>
           <p className='font-bold'>division: {division.toUpperCase()}</p>
-          <p className='font-bold'>team: {teamColor}</p>
+          <p className='font-bold'>team color: {teamColor}</p>
+          <p className='font-bold'>visible team: {visibleTeam}</p>
+          <p className='font-bold'>visible team name: {visibleTeamName}</p>
           <p className='font-bold'>mode: {states[currentState]}</p>
-        </div>
+          <p className='font-bold'>currentTeamNumbers: {currentTeamNumbers.join(', ')}</p>
+          <p className='font-bold'>currentTeamCountries: {currentTeamCountries.join(', ')}</p>
+          <p className='font-bold'>currentTeamNames: {currentTeamNames.join(', ')}</p>
+        </div> */}
 
         {/* 1 X 3 INDIVIDUAL VIDEO */}
         <div className={`w-[1300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
@@ -88,7 +208,7 @@ export default function Home() {
                 setCurrentState(2);
               }}
             >
-              <source src={videoFileName(teamColor)} type="video/mp4" />
+              <source src={videoFileName(visibleTeam)} type="video/mp4" />
             </video>
           </div>
         </div>
@@ -96,16 +216,16 @@ export default function Home() {
         {/* BOT VIDEO */}
         <div className={`absolute top-[150px] left-[0] z-20 w-[640px] overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
           <video
+            key={visibleTeam} // Add this key prop
             className="w-[640px] h-[600px] object-cover"
             autoPlay
             loop
             playsInline
             muted
           >
-            <source src="/3388N.mp4" type="video/mp4" />
+            <source src={robotFileName(visibleTeam)} type="video/mp4" />
           </video>
         </div>
-
         {/* BANNER */}
         <AnimatePresence>
           {currentState === 2 && (
@@ -125,18 +245,18 @@ export default function Home() {
             >
               <div className='ml-24 flex flex-row'>
                 <div className='text-white font-saira text-[96px] uppercase'>
-                  {team}
+                  {visibleTeam}
                 </div>
                 <div className='my-auto ml-8'>
                   <img
                     className='w-[100px] z-50 border-2 border-white rounded-md'
-                    src={`/flag/${teamToContryMap.get(team) || 'ca'}.svg`}
+                    src={`/flag/${countryMap.get(visibleCountry) || 'ca'}.svg`}
                     alt="Canada"
                   />
                 </div>
               </div>
               <div className='text-white text-[42px] overflow-hidden -mt-4 tracking-wider ml-24 uppercase'>
-                {teamName}
+                {visibleTeamName}
               </div>
             </motion.div>
           )}

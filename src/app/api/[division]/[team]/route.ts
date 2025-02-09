@@ -7,7 +7,8 @@ export async function GET(
   const params = await context.params; // Await params
   const { division, team } = params;
 
-  global.eventClients?.forEach(client => {
+  // Ensure global.eventClients is properly typed
+  (global as any).eventClients?.forEach((client: any) => {
     client.write(`data: ${division}-${team}\n\n`);
   });
 

@@ -1,19 +1,10 @@
 import { useMemo } from 'react';
 import { useSubscription, gql } from '@apollo/client';
 import { rockiesTmId, prairiesTmId, foothillsTmId, badlandsTmId, domeTmId, client } from '@/lib/apollo-client';
+import { MatchStatus } from '@/hooks/useMatchSubscription';
 
-export enum MatchStatus {
-  UNKNOWN,
-  QUEUED,
-  AUTON,
-  PAUSED,
-  DRIVER,
-  SCORING,
-  COMPLETED,
-}
-
-export type MatchQueuedData =  {
-  matchQueued: {
+export type MatchStatusUpdatedData = {
+  matchStatusUpdated: {
     linked: {
       name: string;
     };
@@ -23,7 +14,6 @@ export type MatchQueuedData =  {
     red: {
       teams: {
         number: string;
-        name: string;
         country: string;
       }[];
     };
@@ -36,13 +26,13 @@ export type MatchQueuedData =  {
     };
     status: MatchStatus;
     endTime: number; // unix timestamp
-  };
+  }
 }
 
 const DIVISION_SUBSCRIPTIONS = {
   rockies: gql`
-    subscription{
-      matchQueued(tmId: ${rockiesTmId}){
+      subscription {
+      matchStatusUpdated(tmId: ${rockiesTmId}) {
         linked {
           name
         }
@@ -52,13 +42,11 @@ const DIVISION_SUBSCRIPTIONS = {
         red {
           teams {
             number
-            name
             country
           }
         }
         blue {
           teams {
-            name
             number
             country
           }
@@ -69,8 +57,8 @@ const DIVISION_SUBSCRIPTIONS = {
     }
   `,
   prairies: gql`
-    subscription{
-      matchQueued(tmId: ${prairiesTmId}){
+      subscription {
+      matchStatusUpdated(tmId: ${prairiesTmId}) {
         linked {
           name
         }
@@ -80,13 +68,11 @@ const DIVISION_SUBSCRIPTIONS = {
         red {
           teams {
             number
-            name
             country
           }
         }
         blue {
           teams {
-            name
             number
             country
           }
@@ -97,8 +83,8 @@ const DIVISION_SUBSCRIPTIONS = {
     }
   `,
   foothills: gql`
-    subscription{
-      matchQueued(tmId: ${foothillsTmId}){
+      subscription {
+      matchStatusUpdated(tmId: ${foothillsTmId}) {
         linked {
           name
         }
@@ -108,13 +94,11 @@ const DIVISION_SUBSCRIPTIONS = {
         red {
           teams {
             number
-            name
             country
           }
         }
         blue {
           teams {
-            name
             number
             country
           }
@@ -125,8 +109,8 @@ const DIVISION_SUBSCRIPTIONS = {
     }
   `,
   badlands: gql`
-    subscription{
-      matchQueued(tmId: ${badlandsTmId}){
+      subscription {
+      matchStatusUpdated(tmId: ${badlandsTmId}) {
         linked {
           name
         }
@@ -136,13 +120,11 @@ const DIVISION_SUBSCRIPTIONS = {
         red {
           teams {
             number
-            name
             country
           }
         }
         blue {
           teams {
-            name
             number
             country
           }
@@ -153,8 +135,8 @@ const DIVISION_SUBSCRIPTIONS = {
     }
   `,
   dome: gql`
-    subscription{
-      matchQueued(tmId: ${domeTmId}){
+      subscription {
+      matchStatusUpdated(tmId: ${domeTmId}) {
         linked {
           name
         }
@@ -164,13 +146,11 @@ const DIVISION_SUBSCRIPTIONS = {
         red {
           teams {
             number
-            name
             country
           }
         }
         blue {
           teams {
-            name
             number
             country
           }
@@ -179,15 +159,17 @@ const DIVISION_SUBSCRIPTIONS = {
         endTime
       }
     }
-  `,  
+  `,
 } as const;
 
 type DivisionName = keyof typeof DIVISION_SUBSCRIPTIONS;
 
-export function useMatchSubscription(division: DivisionName) {
+export function useMatchStatusUpdated(division: DivisionName) {
   const subscription = useMemo(() =>
     DIVISION_SUBSCRIPTIONS[division],
     [division]
   );
-  return useSubscription<MatchQueuedData>(subscription, { variables: { tmId: division === 'dome' ? 3 : 0 }, client });
+  return useSubscription<MatchStatusUpdatedData>(subscription, { variables: { tmId: division === 'dome' ? 3 : 0 }, client });
 }
+
+

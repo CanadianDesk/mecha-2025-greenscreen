@@ -73,29 +73,27 @@ export default function Home() {
         </div> */}
 
         {/* 1 X 3 INDIVIDUAL VIDEO - SHOW LAST FRAME */}
-        <div className="w-[1300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden opacity-100">
-          <div className="w-[1300px] overflow-hidden">
-            <video
-              ref={tripleVideoRef}
-              className="w-[1300px] h-[1000px] object-cover scale-[1]"
-              playsInline
-              muted
-            >
-              <source src={videoFileName(teamColor)} type="video/mp4" />
-            </video>
-          </div>
+        <div className="absolute bottom-0 right-0 overflow-hidden opacity-100 scale-[0.7] translate-x-[290px] translate-y-[170px]">
+          <video
+            ref={tripleVideoRef}
+            className="w-[1920px] h-[1080px] object-cover"
+            playsInline
+            muted
+          >
+            <source src='/team/221T.mp4' type="video/mp4" />
+          </video>
         </div>
 
         {/* BOT VIDEO */}
-        <div className="absolute top-[150px] left-[0] z-20 w-[640px] overflow-hidden opacity-100">
+        <div className="absolute top-[150px] left-[0] z-20 w-[620px] overflow-hidden opacity-100">
           <video
-            className="w-[640px] h-[600px] object-cover"
+            className="w-[620px] h-[600px] object-cover"
             autoPlay
             loop
             playsInline
             muted
           >
-            <source src="/3388N.mp4" type="video/mp4" />
+            <source src="/robot/10K.mp4" type="video/mp4" />
           </video>
         </div>
 
