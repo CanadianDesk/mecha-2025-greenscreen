@@ -83,7 +83,7 @@ export default function PreMatch() {
       const instance = data.matchQueued.instance;
       const number = data.matchQueued.number;
       const append = (round[0] === 'Q' || round[0] === 'P') ? '' : `-${instance}`;
-      setCurrentMatchName(`${round[0]}${number}${append}`);
+      setCurrentMatchName(`${round} ${number}${append}`);
     }
   }, [data]);
 
@@ -162,7 +162,7 @@ export default function PreMatch() {
           <p className='font-bold'>countries: {currentTeamCountries.slice(0, 2).join(', ')} vs {currentTeamCountries.slice(2, 4).join(', ')}</p>
         </div> */}
 
-        <h1 className='text-black font-bold text-center text-[76px] -mt-2 upper'>{currentMatchName}</h1>
+        <h1 className='text-black font-bold text-center text-[76px] -mt-2 upper'>GRAND FINALS</h1>
 
         {/* RED 1 */}
         <div className={`absolute top-[420px] left-[450px] z-30 opacity-100`}>
@@ -172,7 +172,7 @@ export default function PreMatch() {
           <div className={'absolute z-30 top-[125px] left-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
-              src={`/flag/${currentTeamCountries[0]}.svg`}
+              src={`/flag/${currentTeamCountries[2]}.svg`}
               alt="Team Flag"
             />
           </div>
@@ -190,7 +190,7 @@ export default function PreMatch() {
           <div className={'absolute z-30 bottom-[425px] left-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
-              src={`/flag/${currentTeamCountries[1]}.svg`}
+              src={`/flag/${currentDivision === 'badlands' ? currentTeamCountries[2] : currentTeamCountries[3]}.svg`}
               alt="Team Flag"
             />
           </div>
@@ -208,7 +208,7 @@ export default function PreMatch() {
           <div className={'absolute z-30 top-[125px] right-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
-              src={`/flag/${currentTeamCountries[2]}.svg`}
+              src={`/flag/${currentTeamCountries[0]}.svg`}
               alt="Team Flag"
             />
           </div>
@@ -226,7 +226,7 @@ export default function PreMatch() {
           <div className={'absolute z-30 bottom-[425px] right-[20px] border-2 border-white rounded-md'}>
             <img
               className='w-[100px]'
-              src={`/flag/${currentTeamCountries[1]}.svg`}
+              src={`/flag/${currentDivision === 'badlands' ? currentTeamCountries[0] : currentTeamCountries[1]}.svg`}
               alt="Team Flag"
             />
           </div>

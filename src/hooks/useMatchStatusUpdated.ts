@@ -13,6 +13,7 @@ export type MatchStatusUpdatedData = {
     number: number;
     red: {
       teams: {
+        name: string;
         number: string;
         country: string;
       }[];

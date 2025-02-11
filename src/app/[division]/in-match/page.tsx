@@ -88,15 +88,12 @@ export default function InMatch() {
 
       setCurrentStateEndTime(matchStatusData.matchStatusUpdated.endTime);
 
-      // todo: unscuff this
-      // need to do this
+
       const round = matchStatusData.matchStatusUpdated.round;
       const instance = matchStatusData.matchStatusUpdated.instance;
       const number = matchStatusData.matchStatusUpdated.number;
-      // TODO: UNSCUFF THIS
-      // NEED TO DO THIS 
       const append = (round[0] === 'Q' || round[0] === 'P') ? '' : `-${instance}`;
-      setCurrentMatchName(`${round[0]}${number}${append}`);
+      setCurrentMatchName(`${round} ${number}${append}`);
     }
   }, [matchStatusData]);
 

@@ -9,12 +9,11 @@ export default function Home() {
   const [teamName, setTeamName] = useState('it worked yesterday');
 
   const videoFileName = (team: string) => {
-    //temp temp temp
-    return `/red-1.mp4`;
+    return `/team/${team.toUpperCase()}.MP4`;
   };
 
-    const division = useParams().division as string;
-  
+  const division = useParams().division as string;
+
 
   useEffect(() => {
     const eventSource = new EventSource('/api/events');
@@ -28,10 +27,10 @@ export default function Home() {
 
       const commandTeamName = command.replace(`${division}-`, '').toUpperCase();
       const disallowedTeamNames = ['RED-1', 'RED-2', 'BLUE-1', 'BLUE-2'];
-      if (disallowedTeamNames.includes(commandTeamName)) return;  
+      if (disallowedTeamNames.includes(commandTeamName)) return;
 
       setTeam(commandTeamName);
-        
+
     };
 
     const video = tripleVideoRef.current;
@@ -56,11 +55,11 @@ export default function Home() {
     <main>
       <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
         {/* DEBUG  */}
-        <div className="absolute top-4 left-4 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans">
+        {/* <div className="absolute top-4 left-4 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans">
           <h1 className="font-bold uppercase">debug info:</h1>
           <p className="font-bold">page: WALKOUT</p>
           <p className="font-bold">team: {team}</p>
-        </div>
+        </div> */}
 
         {/* 1 X 3 INDIVIDUAL VIDEO - SHOW LAST FRAME */}
         <div className="w-[1300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden opacity-100">
@@ -80,12 +79,13 @@ export default function Home() {
         <div className="absolute top-[150px] left-[0] z-20 w-[640px] overflow-hidden opacity-100">
           <video
             className="w-[640px] h-[600px] object-cover"
+            key={team}
             autoPlay
             loop
             playsInline
             muted
           >
-            <source src="/3388N.mp4" type="video/mp4" />
+            <source src={`/robot/${team.toUpperCase()}.MP4`} type="video/mp4" />
           </video>
         </div>
 
@@ -94,9 +94,9 @@ export default function Home() {
           <div className='text-white font-saira text-[96px] ml-24 uppercase'>
             {team}
           </div>
-          <div className='text-white text-[42px] overflow-hidden -mt-4 tracking-wider ml-24 uppercase'>
+          {/* <div className='text-white text-[42px] overflow-hidden -mt-4 tracking-wider ml-24 uppercase'>
             {teamName}
-          </div>
+          </div> */}
         </div>
       </div>
     </main>

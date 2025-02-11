@@ -5,6 +5,7 @@ import { use, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { countryMap, teamToContryMap } from '@/lib/constants';
 import { useMatchSubscription } from '@/hooks/useMatchSubscription';
+import { VideoSet } from '@/lib/constants';
 
 export default function Home() {
   const tripleVideoRef = useRef<HTMLVideoElement>(null);
@@ -16,15 +17,30 @@ export default function Home() {
   const [currentTeamCountries, setCurrentTeamCountries] = useState(['ca', 'us', 'us', 'ca']);
   const [currentTeamNames, setCurrentTeamNames] = useState(['ERR', 'ERR', 'ERR', 'ERR']);
   const [visibleTeamName, setVisibleTeamName] = useState('ERR');
+  const [currentDivision, setCurrentDivision] = useState('rockies');
+
 
   const states = ['IDLE READY', 'PLAYING', 'IDLE ENDED'];
 
   const videoFileName = (teamNumber: string) => {
     return `/team/${teamNumber.toUpperCase()}.MP4`;
-  };
+
+  }
 
   const robotFileName = (teamNumber: string) => {
-    return `/robot/${teamNumber.toUpperCase()}.MP4`;
+    if (currentDivision !== 'badlands') {
+      if (VideoSet.has(`${teamNumber.toUpperCase()}.MP4`)) {
+        return `/robot/${teamNumber.toUpperCase()}.MP4`;
+      } else {
+        return `/robot/no-walkup.MP4`;
+      }
+    } else {
+      if (VideoSet.has(`${teamNumber.toUpperCase()}.MP4`)) {
+        return `/robot/${teamNumber.toUpperCase()}-A.MP4`;
+      } else {
+        return `/robot/no-walkup.MP4`;
+      }
+    };
   };
 
   const division = useParams().division as "rockies" | "prairies" | "foothills" | "badlands" | "dome";
@@ -37,9 +53,11 @@ export default function Home() {
     if (matchQueuedData?.matchQueued) {
       console.log('data: ', matchQueuedData);
 
+      const currentDivision = matchQueuedData.matchQueued.linked.name.toLowerCase();
+      setCurrentDivision(currentDivision);
 
       let newTeamNumbers = [];
-      if (division !== 'badlands') { // VEX-MS and VEX-HS
+      if (currentDivision !== 'badlands') { // VEX-MS and VEX-HS
         newTeamNumbers = [
           matchQueuedData.matchQueued.blue.teams[0].number,
           matchQueuedData.matchQueued.blue.teams[1].number,
@@ -80,7 +98,7 @@ export default function Home() {
         document.head.appendChild(link);
       });
 
-      if (division !== 'badlands') { // VEX-MS and VEX-HS
+      if (currentDivision !== 'badlands') { // VEX-MS and VEX-HS
         //@ts-ignore
         setCurrentTeamCountries([countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.blue.teams[1].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[1].country)]);
       } else { // VEX-U
@@ -88,7 +106,7 @@ export default function Home() {
         setCurrentTeamCountries([countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.blue.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country), countryMap.get(matchQueuedData.matchQueued.red.teams[0].country)]);
       }
 
-      if (division !== 'badlands') { // VEX-MS and VEX-HS
+      if (currentDivision !== 'badlands') { // VEX-MS and VEX-HS
         setCurrentTeamNames([
           matchQueuedData.matchQueued.blue.teams[0].name,
           matchQueuedData.matchQueued.blue.teams[1].name,
@@ -214,13 +232,14 @@ export default function Home() {
     <main>
       <div className="relative w-full max-w-[1920px] h-[1080px] bg-green-400 overflow-hidden mb-12">
         {/* DEBUG  */}
-        {/* <div className='absolute top-4 left-4 z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans'>
+        {/* <div className='absolute top-4 left-[1000px] z-10 overflow-hidden text-yellow-300 bg-black p-2 rounded-xl font-sans'>
           <h1 className='font-bold uppercase'>debug info:</h1>
           <p className='font-bold'>page: WALKOUT</p>
           <p className='font-bold'>division: {division.toUpperCase()}</p>
           <p className='font-bold'>team color: {teamColor}</p>
           <p className='font-bold'>visible team: {visibleTeam}</p>
           <p className='font-bold'>visible team name: {visibleTeamName}</p>
+          <p className='font-bold'>visible country: {visibleCountry}</p>
           <p className='font-bold'>mode: {states[currentState]}</p>
           <p className='font-bold'>currentTeamNumbers: {currentTeamNumbers.join(', ')}</p>
           <p className='font-bold'>currentTeamCountries: {currentTeamCountries.join(', ')}</p>
@@ -228,20 +247,18 @@ export default function Home() {
         </div> */}
 
         {/* 1 X 3 INDIVIDUAL VIDEO */}
-        <div className={`w-[1300px] h-[1000px] absolute bottom-0 right-0 bg-green-500 overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
-          <div className="w-[1300px] overflow-hidden">
-            <video
-              ref={tripleVideoRef}
-              className="w-[1300px] h-[1000px] object-cover scale-[1]"
-              playsInline
-              muted
-              onEnded={() => {
-                setCurrentState(2);
-              }}
-            >
-              <source src={videoFileName(visibleTeam)} type="video/mp4" />
-            </video>
-          </div>
+        <div className={`w-[1280px] h-[720px] absolute bottom-0 right-0 bg-green-500 overflow-hidden ${currentState === 0 ? 'opacity-0' : 'opacity-100'}`}>
+          <video
+            ref={tripleVideoRef}
+            className="w-[1280px] h-[720px] object-cover scale-[1]"
+            playsInline
+            muted
+            onEnded={() => {
+              setCurrentState(2);
+            }}
+          >
+            <source src={videoFileName(visibleTeam)} type="video/mp4" />
+          </video>
         </div>
 
         {/* BOT VIDEO */}
@@ -251,7 +268,7 @@ export default function Home() {
             className="w-[640px] h-[600px] object-cover"
           />
         </div>
-        
+
         {/* BANNER */}
         <AnimatePresence>
           {currentState === 2 && (
@@ -276,7 +293,7 @@ export default function Home() {
                 <div className='my-auto ml-8'>
                   <img
                     className='w-[100px] z-50 border-2 border-white rounded-md'
-                    src={`/flag/${countryMap.get(visibleCountry) || 'ca'}.svg`}
+                    src={`/flag/${visibleCountry || 'ca'}.svg`}
                     alt="Canada"
                   />
                 </div>
